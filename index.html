@@ -116,7 +116,6 @@
     async function loadUserData() {
       const response = await fetch("https://script.google.com/macros/s/AKfycbwB5HAjuUqTNdQArIDCkkBwqIxKQJ4QhtJKWy9brFb2xV0adqkjAVoGc7KpJ-hLcKfM/exec");
       const data = await response.json();
-      const tbody = document.querySelector("#userTable tbody");
 
       // Save data globally to filter later
       window.allUsers = data;
@@ -164,9 +163,8 @@
         return;
       }
 
-      const filtered = window.allUsers.filter(user => 
-        user.nationalId.toLowerCase().includes(input)
-      );
+      // Exact match only
+      const filtered = window.allUsers.filter(user => user.nationalId.toLowerCase() === input);
       renderTable(filtered);
     }
 
