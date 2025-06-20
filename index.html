@@ -188,7 +188,7 @@
 
       users.forEach(user => {
         const tr = document.createElement("tr");
-        if (highlightId && user.nationalId.toLowerCase() === highlightId.toLowerCase()) {
+        if (highlightId && String(user.nationalId).toLowerCase() === highlightId.toLowerCase()) {
           tr.classList.add("highlight");
         }
         tr.innerHTML = `
@@ -222,7 +222,7 @@
         return;
       }
 
-      const filtered = allUsers.filter(user => user.nationalId.toLowerCase() === input);
+      const filtered = allUsers.filter(user => String(user.nationalId).toLowerCase() === input);
 
       if (filtered.length > 0) {
         statusDiv.textContent = "User found";
