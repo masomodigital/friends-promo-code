@@ -34,13 +34,46 @@
       margin-bottom: 8px;
     }
 
+    #search-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
     #searchId {
-      width: 100%;
+      flex: 1;
       padding: 8px;
-      margin-bottom: 15px;
       border-radius: 5px;
       border: 1px solid #ccc;
       font-size: 1rem;
+    }
+
+    #searchBtn {
+      padding: 8px 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #searchBtn:hover {
+      background-color: #0056b3;
+    }
+
+    #searchStatus {
+      font-weight: 600;
+      font-size: 0.95rem;
+      height: 1.2em;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    #searchStatus.found {
+      color: #28a745; /* green */
+    }
+    #searchStatus.notfound {
+      color: #D32F2F; /* red */
     }
 
     table {
@@ -93,6 +126,12 @@
         padding: 4px 8px;
         font-size: 0.8rem;
       }
+      #search-container {
+        flex-direction: column;
+      }
+      #searchBtn {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -103,7 +142,11 @@
   </div>
 
   <label for="searchId">Search by National ID or User ID:</label>
-  <input type="text" id="searchId" placeholder="Enter National ID or User ID" />
+  <div id="search-container">
+    <input type="text" id="searchId" placeholder="Enter National ID or User ID" />
+    <button id="searchBtn">Search</button>
+  </div>
+  <div id="searchStatus"></div>
 
   <table id="userTable">
     <thead>
@@ -164,21 +207,42 @@
       });
     }
 
-    function filterUsers() {
+    function searchUser() {
       const input = document.getElementById("searchId").value.trim().toLowerCase();
+      const statusDiv = document.getElementById("searchStatus");
+
       if (!input) {
         renderTable(allUsers);
+        statusDiv.textContent = "";
+        statusDiv.className = "";
         return;
       }
 
-      // Exact match only
       const filtered = allUsers.filter(user => user.nationalId.toLowerCase() === input);
+
+      if (filtered.length > 0) {
+        statusDiv.textContent = "User found";
+        statusDiv.className = "found";
+      } else {
+        statusDiv.textContent = "No user found";
+        statusDiv.className = "notfound";
+      }
+
       renderTable(filtered, input);
     }
 
     window.onload = function() {
       loadUserData();
-      document.getElementById("searchId").addEventListener("input", filterUsers);
+
+      document.getElementById("searchBtn").addEventListener("click", searchUser);
+
+      // Also allow pressing Enter key to trigger search
+      document.getElementById("searchId").addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          searchUser();
+        }
+      });
     };
   </script>
 </body>
