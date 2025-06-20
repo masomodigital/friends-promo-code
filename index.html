@@ -164,16 +164,20 @@
     let allUsers = [];
 
     async function loadUserData() {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbwB5HAjuUqTNdQArIDCkkBwqIxKQJ4QhtJKWy9brFb2xV0adqkjAVoGc7KpJ-hLcKfM/exec");
-      const data = await response.json();
-
-      allUsers = data;
-      renderTable(allUsers);
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbwB5HAjuUqTNdQArIDCkkBwqIxKQJ4QhtJKWy9brFb2xV0adqkjAVoGc7KpJ-hLcKfM/exec");
+        const data = await response.json();
+        allUsers = data;
+        renderTable(allUsers);
+      } catch(e) {
+        alert("Failed to load user data.");
+        console.error(e);
+      }
     }
 
     function renderTable(users, highlightId = null) {
       const tbody = document.querySelector("#userTable tbody");
-      tbody.innerHTML = ""; // Clear existing rows
+      tbody.innerHTML = "";
 
       if (users.length === 0) {
         const tr = document.createElement("tr");
@@ -236,7 +240,6 @@
 
       document.getElementById("searchBtn").addEventListener("click", searchUser);
 
-      // Also allow pressing Enter key to trigger search
       document.getElementById("searchId").addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
           event.preventDefault();
