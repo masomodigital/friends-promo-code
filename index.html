@@ -66,6 +66,11 @@
       background-color: #f2f2f2;
     }
 
+    tr.highlight {
+      background-color: #fff7cc !important; /* Light yellow highlight */
+      font-weight: bold;
+    }
+
     .copy-btn {
       padding: 6px 12px;
       background-color: #28a745;
@@ -113,17 +118,17 @@
   </table>
 
   <script>
+    let allUsers = [];
+
     async function loadUserData() {
       const response = await fetch("https://script.google.com/macros/s/AKfycbwB5HAjuUqTNdQArIDCkkBwqIxKQJ4QhtJKWy9brFb2xV0adqkjAVoGc7KpJ-hLcKfM/exec");
       const data = await response.json();
 
-      // Save data globally to filter later
-      window.allUsers = data;
-
-      renderTable(data);
+      allUsers = data;
+      renderTable(allUsers);
     }
 
-    function renderTable(users) {
+    function renderTable(users, highlightId = null) {
       const tbody = document.querySelector("#userTable tbody");
       tbody.innerHTML = ""; // Clear existing rows
 
@@ -135,8 +140,11 @@
       }
 
       users.forEach(user => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
+        const tr = document.createElement("tr");
+        if (highlightId && user.nationalId.toLowerCase() === highlightId.toLowerCase()) {
+          tr.classList.add("highlight");
+        }
+        tr.innerHTML = `
           <td>${user.nationalId}</td>
           <td>${user.name}</td>
           <td>${user.phone}</td>
@@ -145,7 +153,7 @@
             <button class="copy-btn" onclick="copyToClipboard('${user.nationalId}')">Copy</button>
           </td>
         `;
-        tbody.appendChild(row);
+        tbody.appendChild(tr);
       });
     }
 
@@ -159,19 +167,17 @@
     function filterUsers() {
       const input = document.getElementById("searchId").value.trim().toLowerCase();
       if (!input) {
-        renderTable(window.allUsers);
+        renderTable(allUsers);
         return;
       }
 
       // Exact match only
-      const filtered = window.allUsers.filter(user => user.nationalId.toLowerCase() === input);
-      renderTable(filtered);
+      const filtered = allUsers.filter(user => user.nationalId.toLowerCase() === input);
+      renderTable(filtered, input);
     }
 
     window.onload = function() {
       loadUserData();
-
-      // Add event listener for filtering while typing
       document.getElementById("searchId").addEventListener("input", filterUsers);
     };
   </script>
